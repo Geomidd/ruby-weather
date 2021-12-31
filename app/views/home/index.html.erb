@@ -1,9 +1,9 @@
-<div class="p-5 mb-4 bg-light rounded-3">
+<div class="p-5 mb-4 bg-<%= @api_color %> rounded-3">
   <div class="container-fluid py-5">
-    <h1 class="display-5 fw-bold">Custom jumbotron</h1>
+    <h1 class="display-5 fw-bold"><%= @final_output %></h1>
     <p class="col-md-8 fs-4">This is the current ozone air quality readout for my neighborhood in Las Vegas</p>
     <hr class="my-4">
-    <p class="col-md-8 fs-4">Hit "Reload" in your web browser to update the reading...</p>
-    <button class="btn btn-secondary btn-lg" type="button">Example button</button>
+    <p><%= @api_description %></p>
   </div>
 </div>
+<br />
