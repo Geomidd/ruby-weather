@@ -24,8 +24,10 @@ class HomeController < ApplicationController
 
     if !@output or @output.empty?
       @final_output = 'Error'
+      @location = 'unknown'
     else
       @final_output = @output[0]['AQI']
+      @location = @output[0]['ReportingArea']
     end
 
     case @final_output
@@ -51,5 +53,56 @@ class HomeController < ApplicationController
         @api_color = 'secondary' 
         @api_description = API_DESCRIPTIONS['error']
     end
+  end
+
+  def zipcode 
+    @zip_query = params[:zipcode]
+    puts @zip_query
+    if params[:zipcode] == "" or !params[:zipcode]
+      @zip_query = "You forgot to enter a zipcode!"
+    elsif params[:zipcode]
+    else
+      @zip_query = 'world'
+    end
+
+    distance = 25
+    @url = "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=#{@zip_query}&distance=#{distance}&API_KEY=#{API_KEY}"
+    @uri = URI(@url)
+    @response = Net::HTTP.get(@uri)
+    @output = JSON.parse(@response)
+    puts @output
+
+    if !@output or @output.empty?
+      @final_output = 'Error'
+      @location = 'unknown'
+    else
+      @final_output = @output[0]['AQI']
+      @location = @output[0]['ReportingArea']
+    end
+
+    case @final_output
+      when 0...50 
+        @api_color = 'green'
+        @api_description = API_DESCRIPTIONS['good']
+      when 51...100 
+        @api_color = 'yellow'
+        @api_description = API_DESCRIPTIONS['moderate']
+      when 101...150 
+        @api_color = 'orange'
+        @api_description = API_DESCRIPTIONS['sensitive']
+      when 151...200 
+        @api_color = 'red'
+        @api_description = API_DESCRIPTIONS['unhealthy']
+      when 201...300 
+        @api_color = 'purple'
+        @api_description = API_DESCRIPTIONS['very_unhealthy']
+      when 301...500 
+        @api_color = 'maroon'
+        @api_description = API_DESCRIPTIONS['hazardous']
+      else
+        @api_color = 'secondary' 
+        @api_description = API_DESCRIPTIONS['error']
+    end
+    # render :action => 'zipcode', status: :unprocessable_entity
   end
 end
